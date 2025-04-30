@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"go-fiber-vercel/handlers"
+	"go-fiber-vercel/controllers"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -9,5 +9,5 @@ import (
 // V1Route mengatur routing untuk versi 1
 func V1Route(app *fiber.App) {
 	v1 := app.Group("/v1")
-	v1.Get("/", handlers.V1Handler)
+	v1.Get("/items", controllers.GetAllItems)
 }
