@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"go-fiber-vercel/models"
 	"strconv"
 	"strings"
 )
@@ -117,4 +119,92 @@ func GetAllItems(params map[string]string) ([]map[string]interface{}, int, error
 	}
 
 	return items, totalData, nil
+}
+
+func CreateItem(item *models.Item) (*models.Item, error) {
+	sql := `
+        INSERT INTO items (name, category_id, stock, unit, min_stock)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, name, category_id, stock, unit, min_stock`
+
+	row, err := ExecuteSQLWithParams(sql,
+		item.Name,
+		item.CategoryID,
+		item.Stock,
+		item.Unit,
+		item.MinStock,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		return nil, fmt.Errorf("no rows returned after insert")
+	}
+
+	createdItem := &models.Item{}
+	err = row.Scan(
+		&createdItem.ID,
+		&createdItem.Name,
+		&createdItem.CategoryID,
+		&createdItem.Stock,
+		&createdItem.Unit,
+		&createdItem.MinStock,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdItem, nil
+}
+
+func UpdateItem(id int, item *models.Item) (*models.Item, error) {
+	sql := `
+        UPDATE items 
+        SET name = $1, category_id = $2, stock = $3, unit = $4, min_stock = $5
+        WHERE id = $6
+        RETURNING id, name, category_id, stock, unit, min_stock`
+
+	row, err := ExecuteSQLWithParams(sql,
+		item.Name,
+		item.CategoryID,
+		item.Stock,
+		item.Unit,
+		item.MinStock,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		return nil, fmt.Errorf("item with id %d not found", id)
+	}
+
+	updatedItem := &models.Item{}
+	err = row.Scan(
+		&updatedItem.ID,
+		&updatedItem.Name,
+		&updatedItem.CategoryID,
+		&updatedItem.Stock,
+		&updatedItem.Unit,
+		&updatedItem.MinStock,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedItem, nil
+}
+
+func DeleteItem(id int) error {
+	sql := "DELETE FROM items WHERE id = $1"
+	rows, err := ExecuteSQLWithParams(sql, id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return nil
 }

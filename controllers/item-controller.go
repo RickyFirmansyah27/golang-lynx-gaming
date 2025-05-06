@@ -29,3 +29,49 @@ func GetAllItems(c *fiber.Ctx) error {
 
 	return helpers.Success(c, "Successfully fetched items", data)
 }
+
+func CreateItem(c *fiber.Ctx) error {
+	log.Printf("[ItemsController] - Creating new item")
+
+	item, err := services.CreateItem(c)
+	if err != nil {
+		log.Printf("[ItemsController] - Failed to create item: %v", err)
+		return helpers.Error(c, 400, "Failed to create item", err)
+	}
+
+	data := fiber.Map{
+		"item": item,
+	}
+
+	log.Printf("[ItemsController] - Successfully created item with ID: %d", item.ID)
+	return helpers.Success(c, "Successfully created item", data)
+}
+
+func UpdateItem(c *fiber.Ctx) error {
+	log.Printf("[ItemsController] - Updating item with ID: %s", c.Params("id"))
+
+	item, err := services.UpdateItem(c)
+	if err != nil {
+		log.Printf("[ItemsController] - Failed to update item: %v", err)
+		return helpers.Error(c, 400, "Failed to update item", err)
+	}
+
+	data := fiber.Map{
+		"item": item,
+	}
+
+	log.Printf("[ItemsController] - Successfully updated item with ID: %d", item.ID)
+	return helpers.Success(c, "Successfully updated item", data)
+}
+
+func DeleteItem(c *fiber.Ctx) error {
+	log.Printf("[ItemsController] - Deleting item with ID: %s", c.Params("id"))
+
+	if err := services.DeleteItem(c); err != nil {
+		log.Printf("[ItemsController] - Failed to delete item: %v", err)
+		return helpers.Error(c, 400, "Failed to delete item", err)
+	}
+
+	log.Printf("[ItemsController] - Successfully deleted item with ID: %s", c.Params("id"))
+	return helpers.Success(c, "Successfully deleted item", nil)
+}

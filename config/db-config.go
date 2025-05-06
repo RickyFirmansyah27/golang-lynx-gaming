@@ -12,7 +12,7 @@ import (
 )
 
 var dbPool *pgxpool.Pool
-var contextLogger = "[Postgres DB - connection]"
+var contextLogger = "[Neon DB - connection]"
 
 func init() {
 	err := godotenv.Load()
