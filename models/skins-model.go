@@ -1,0 +1,10 @@
+package models
+
+type Skins struct {
+	ID       int    `json:"id" db:"id"`
+	Name     string `json:"nama" db:"nama"`
+	Hero     string `json:"hero" db:"hero"`
+	Tag      string `json:"tag" db:"tag"`
+	ImageUrl string `json:"image_url" db:"image_url"`
+	Config   *byte  `json:"config" db:"config"` // Nullable to handle NULL
+}

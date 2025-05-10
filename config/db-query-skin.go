@@ -3,9 +3,11 @@ package config
 import (
 	"strconv"
 	"strings"
+
+	"go-fiber-vercel/models" // Import the models package
 )
 
-func GetAllskins(params map[string]string) ([]map[string]interface{}, int, error) {
+func GetAllskins(params map[string]string) ([]models.Skins, int, error) {
 	page, err := strconv.Atoi(params["page"])
 	if err != nil || page < 1 {
 		page = 1
@@ -20,8 +22,8 @@ func GetAllskins(params map[string]string) ([]map[string]interface{}, int, error
 		size = 10
 	}
 
-	query := "SELECT * FROM skins"
-	queryCount := "SELECT COUNT(*) FROM skins"
+	query := "SELECT id, nama, tag, hero, image_url, config FROM lynx.skins"
+	queryCount := "SELECT COUNT(*) FROM lynx.skins"
 
 	whereClauses := []string{}
 	queryParams := []interface{}{}
@@ -54,7 +56,6 @@ func GetAllskins(params map[string]string) ([]map[string]interface{}, int, error
 	sortBy := params["sort_by"]
 	sortOrder := params["sort_order"]
 
-	// Update allowed sort fields
 	allowedSortFields := map[string]bool{
 		"id": true, "nama": true, "tag": true, "hero": true,
 	}
@@ -92,23 +93,13 @@ func GetAllskins(params map[string]string) ([]map[string]interface{}, int, error
 	}
 	defer rows.Close()
 
-	skins := []map[string]interface{}{}
+	skins := []models.Skins{}
 	for rows.Next() {
-		var id int
-		var nama, tag, hero string
-		var config byte
-
-		if err := rows.Scan(&id, &nama, &tag, &hero, &config); err != nil {
+		var skin models.Skins
+		if err := rows.Scan(&skin.ID, &skin.Name, &skin.Tag, &skin.Hero, &skin.ImageUrl, &skin.Config); err != nil {
 			return nil, 0, err
 		}
-
-		skins = append(skins, map[string]interface{}{
-			"id":     id,
-			"nama":   nama,
-			"tag":    tag,
-			"hero":   hero,
-			"config": config,
-		})
+		skins = append(skins, skin)
 	}
 
 	if err := rows.Err(); err != nil {
