@@ -108,3 +108,26 @@ func GetAllskins(params map[string]string) ([]models.Skins, int, error) {
 
 	return skins, totalData, nil
 }
+func UpdateSkin(id int, skin models.Skins) (models.Skins, error) {
+	// Update the skin
+	query := `UPDATE lynx.skins 
+              SET nama = $1, tag = $2, hero = $3, image_url = $4, config = $5 
+              WHERE id = $6 
+              RETURNING id, nama, tag, hero, image_url, config`
+
+	row, err := ExecuteSQLWithParams(query, skin.Name, skin.Tag, skin.Hero, skin.ImageUrl, skin.Config, id)
+	if err != nil {
+		return models.Skins{}, err
+	}
+	defer row.Close()
+	var updatedSkin models.Skins
+	if row.Next() {
+		if err := row.Scan(&updatedSkin.ID, &updatedSkin.Name, &updatedSkin.Tag, &updatedSkin.Hero, &updatedSkin.ImageUrl, &updatedSkin.Config); err != nil {
+			return models.Skins{}, err
+		}
+	} else {
+		return models.Skins{}, nil
+	}
+
+	return updatedSkin, nil
+}
