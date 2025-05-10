@@ -1,0 +1,119 @@
+package config
+
+import (
+	"strconv"
+	"strings"
+)
+
+func GetAllskins(params map[string]string) ([]map[string]interface{}, int, error) {
+	page, err := strconv.Atoi(params["page"])
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	size, err := strconv.Atoi(params["size"])
+	if err != nil {
+		size = 10
+	}
+
+	if size != 10 && size != 20 && size != 50 {
+		size = 10
+	}
+
+	query := "SELECT * FROM skins"
+	queryCount := "SELECT COUNT(*) FROM skins"
+
+	whereClauses := []string{}
+	queryParams := []interface{}{}
+	paramIndex := 1
+
+	if nama, ok := params["nama"]; ok && nama != "" {
+		whereClauses = append(whereClauses, "nama ILIKE $"+strconv.Itoa(paramIndex))
+		queryParams = append(queryParams, "%"+nama+"%")
+		paramIndex++
+	}
+
+	if categoryID, ok := params["tag"]; ok && categoryID != "" {
+		whereClauses = append(whereClauses, "tag = $"+strconv.Itoa(paramIndex))
+		queryParams = append(queryParams, categoryID)
+		paramIndex++
+	}
+
+	if hero, ok := params["hero"]; ok && hero != "" {
+		whereClauses = append(whereClauses, "hero = $"+strconv.Itoa(paramIndex))
+		queryParams = append(queryParams, hero)
+		paramIndex++
+	}
+
+	if len(whereClauses) > 0 {
+		whereStr := strings.Join(whereClauses, " AND ")
+		query += " WHERE " + whereStr
+		queryCount += " WHERE " + whereStr
+	}
+
+	sortBy := params["sort_by"]
+	sortOrder := params["sort_order"]
+
+	// Update allowed sort fields
+	allowedSortFields := map[string]bool{
+		"id": true, "nama": true, "tag": true, "hero": true,
+	}
+
+	if _, ok := allowedSortFields[sortBy]; !ok {
+		sortBy = "id"
+	}
+
+	if sortOrder != "ASC" && sortOrder != "DESC" {
+		sortOrder = "ASC"
+	}
+
+	query += " ORDER BY " + sortBy + " " + sortOrder
+
+	offset := (page - 1) * size
+	query += " LIMIT $" + strconv.Itoa(paramIndex) + " OFFSET $" + strconv.Itoa(paramIndex+1)
+	queryParams = append(queryParams, size, offset)
+
+	countRows, err := ExecuteSQLWithParams(queryCount, queryParams[:paramIndex-1]...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer countRows.Close()
+
+	var totalData int
+	if countRows.Next() {
+		if err := countRows.Scan(&totalData); err != nil {
+			return nil, 0, err
+		}
+	}
+
+	rows, err := ExecuteSQLWithParams(query, queryParams...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	skins := []map[string]interface{}{}
+	for rows.Next() {
+		var id int
+		var nama, tag, hero string
+		var config byte
+
+		if err := rows.Scan(&id, &nama, &tag, &hero, &config); err != nil {
+			return nil, 0, err
+		}
+
+		skins = append(skins, map[string]interface{}{
+			"id":     id,
+			"nama":   nama,
+			"tag":    tag,
+			"hero":   hero,
+			"config": config,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	return skins, totalData, nil
+}
