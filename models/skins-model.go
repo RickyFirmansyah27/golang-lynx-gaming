@@ -6,5 +6,5 @@ type Skins struct {
 	Hero     string `json:"hero" db:"hero"`
 	Tag      string `json:"tag" db:"tag"`
 	ImageUrl string `json:"image_url" db:"image_url"`
-	Config   *byte  `json:"config" db:"config"` // Nullable to handle NULL
+	Config   string `json:"config" db:"config"`
 }
