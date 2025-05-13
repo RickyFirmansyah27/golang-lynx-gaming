@@ -86,7 +86,7 @@ func GetAllArenas(params map[string]string) ([]models.Arenas, int, error) {
 	arenas := []models.Arenas{}
 	for rows.Next() {
 		var arena models.Arenas
-		if err := rows.Scan(&arena.ID, &arena.Name, &arena.Desciption, &arena.Tag, &arena.ImageUrl, &arena.Config); err != nil {
+		if err := rows.Scan(&arena.ID, &arena.Name, &arena.Description, &arena.Tag, &arena.ImageUrl, &arena.Config); err != nil {
 			return nil, 0, err
 		}
 		arenas = append(arenas, arena)
@@ -104,7 +104,7 @@ func CreateArena(arena models.Arenas) (models.Arenas, error) {
 			  VALUES ($1, $2, $3, $4, $5)
 			  RETURNING id, nama, deskripsi, tag, image_url, config`
 
-	row, err := ExecuteSQLWithParams(query, arena.Name, arena.Desciption, arena.Tag, arena.ImageUrl, arena.Config)
+	row, err := ExecuteSQLWithParams(query, arena.Name, arena.Description, arena.Tag, arena.ImageUrl, arena.Config)
 	if err != nil {
 		return models.Arenas{}, err
 	}
@@ -112,7 +112,7 @@ func CreateArena(arena models.Arenas) (models.Arenas, error) {
 
 	var newArena models.Arenas
 	if row.Next() {
-		if err := row.Scan(&newArena.ID, &newArena.Name, &newArena.Desciption, &newArena.Tag, &newArena.ImageUrl, &newArena.Config); err != nil {
+		if err := row.Scan(&newArena.ID, &newArena.Name, &newArena.Description, &newArena.Tag, &newArena.ImageUrl, &newArena.Config); err != nil {
 			return models.Arenas{}, err
 		}
 	}
@@ -126,7 +126,7 @@ func UpdateArena(id int, arena models.Arenas) (models.Arenas, error) {
               WHERE id = $6
               RETURNING id, nama, deskripsi, tag, image_url, config`
 
-	row, err := ExecuteSQLWithParams(query, arena.Name, arena.Desciption, arena.Tag, arena.ImageUrl, arena.Config, id)
+	row, err := ExecuteSQLWithParams(query, arena.Name, arena.Description, arena.Tag, arena.ImageUrl, arena.Config, id)
 	if err != nil {
 		return models.Arenas{}, err
 	}
@@ -134,7 +134,7 @@ func UpdateArena(id int, arena models.Arenas) (models.Arenas, error) {
 
 	var updatedArena models.Arenas
 	if row.Next() {
-		if err := row.Scan(&updatedArena.ID, &updatedArena.Name, &updatedArena.Desciption, &updatedArena.Tag, &updatedArena.ImageUrl, &updatedArena.Config); err != nil {
+		if err := row.Scan(&updatedArena.ID, &updatedArena.Name, &updatedArena.Description, &updatedArena.Tag, &updatedArena.ImageUrl, &updatedArena.Config); err != nil {
 			return models.Arenas{}, err
 		}
 	} else {

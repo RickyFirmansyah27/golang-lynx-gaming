@@ -92,7 +92,7 @@ func GetAllskins(params map[string]string) ([]models.Skins, int, error) {
 	skins := []models.Skins{}
 	for rows.Next() {
 		var skin models.Skins
-		if err := rows.Scan(&skin.ID, &skin.Name, &skin.Tag, &skin.Hero, &skin.Desciption, &skin.ImageUrl, &skin.Config); err != nil {
+		if err := rows.Scan(&skin.ID, &skin.Name, &skin.Tag, &skin.Hero, &skin.Description, &skin.ImageUrl, &skin.Config); err != nil {
 			return nil, 0, err
 		}
 		skins = append(skins, skin)
@@ -133,7 +133,7 @@ func CreateSkin(skin models.Skins) (models.Skins, error) {
 			  VALUES ($1, $2, $3, $4, $5, $6)
 			  RETURNING id, nama, tag, hero, deskripsi, image_url, config`
 
-	row, err := ExecuteSQLWithParams(query, skin.Name, skin.Tag, skin.Hero, skin.Desciption, skin.ImageUrl, skin.Config)
+	row, err := ExecuteSQLWithParams(query, skin.Name, skin.Tag, skin.Hero, skin.Description, skin.ImageUrl, skin.Config)
 	if err != nil {
 		return models.Skins{}, err
 	}
@@ -141,7 +141,7 @@ func CreateSkin(skin models.Skins) (models.Skins, error) {
 
 	var newSkin models.Skins
 	if row.Next() {
-		if err := row.Scan(&newSkin.ID, &newSkin.Name, &newSkin.Tag, &newSkin.Hero, &newSkin.Desciption, &newSkin.ImageUrl, &newSkin.Config); err != nil {
+		if err := row.Scan(&newSkin.ID, &newSkin.Name, &newSkin.Tag, &newSkin.Hero, &newSkin.Description, &newSkin.ImageUrl, &newSkin.Config); err != nil {
 			return models.Skins{}, err
 		}
 	}
