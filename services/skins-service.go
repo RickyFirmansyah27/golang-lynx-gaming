@@ -28,7 +28,7 @@ func GetSkins(c *fiber.Ctx) (int, []models.Skins, error) {
 	return totalData, skins, nil
 }
 
-func UpdateSkin(c *fiber.Ctx) (*models.Skins, error) {
+func UpdateSkins(c *fiber.Ctx) (*models.Skins, error) {
 	log.Println("[SkinsService] - Updating skin...")
 
 	idParam := c.Params("id")
@@ -52,4 +52,23 @@ func UpdateSkin(c *fiber.Ctx) (*models.Skins, error) {
 
 	log.Printf("[SkinsService] - Skin updated: %+v", updatedSkin)
 	return &updatedSkin, nil
+}
+
+func CreateSkins(c *fiber.Ctx) (*models.Skins, error) {
+	log.Println("[SkinsService] - Creating new skin...")
+
+	var skin models.Skins
+	if err := c.BodyParser(&skin); err != nil {
+		log.Printf("[SkinsService] - Failed to parse body: %v", err)
+		return nil, fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	createdSkin, err := config.CreateSkin(skin)
+	if err != nil {
+		log.Printf("[SkinsService] - Failed to create skin: %v", err)
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "Failed to create skin")
+	}
+
+	log.Printf("[SkinsService] - Skin created: %+v", createdSkin)
+	return &createdSkin, nil
 }

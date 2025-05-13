@@ -131,3 +131,24 @@ func UpdateSkin(id int, skin models.Skins) (models.Skins, error) {
 
 	return updatedSkin, nil
 }
+
+func CreateSkin(skin models.Skins) (models.Skins, error) {
+	query := `INSERT INTO lynx.skins (nama, tag, hero, image_url, config)
+			  VALUES ($1, $2, $3, $4, $5)
+			  RETURNING id, nama, tag, hero, image_url, config`
+
+	row, err := ExecuteSQLWithParams(query, skin.Name, skin.Tag, skin.Hero, skin.ImageUrl, skin.Config)
+	if err != nil {
+		return models.Skins{}, err
+	}
+	defer row.Close()
+
+	var newSkin models.Skins
+	if row.Next() {
+		if err := row.Scan(&newSkin.ID, &newSkin.Name, &newSkin.Tag, &newSkin.Hero, &newSkin.ImageUrl, &newSkin.Config); err != nil {
+			return models.Skins{}, err
+		}
+	}
+
+	return newSkin, nil
+}

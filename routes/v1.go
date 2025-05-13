@@ -10,5 +10,6 @@ import (
 func V1Route(app *fiber.App) {
 	v1 := app.Group("/v1")
 	v1.Get("/skins", controllers.GetAllSkins)
-	v1.Patch("/skins/:id", controllers.UpdateSkin)
+	v1.Patch("/skins/:id", controllers.UpdateSkins)
+	v1.Post("/skins", controllers.CreateSkins)
 }

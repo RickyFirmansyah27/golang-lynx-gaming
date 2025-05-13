@@ -28,10 +28,10 @@ func GetAllSkins(c *fiber.Ctx) error {
 	return helpers.Success(c, "Successfully fetched skins", data)
 }
 
-func UpdateSkin(c *fiber.Ctx) error {
+func UpdateSkins(c *fiber.Ctx) error {
 	log.Printf("[SkinsController] - Incoming update request for ID: %s", c.Params("id"))
 
-	updatedSkin, err := services.UpdateSkin(c)
+	updatedSkin, err := services.UpdateSkins(c)
 	if err != nil {
 		log.Printf("[SkinsController] - Failed to update skin: %v", err)
 		return helpers.Error(c, fiber.StatusBadRequest, "Failed to update skin", err)
@@ -39,4 +39,17 @@ func UpdateSkin(c *fiber.Ctx) error {
 
 	log.Printf("[SkinsController] - Successfully updated skin: %+v", updatedSkin)
 	return helpers.Success(c, "Successfully updated skin", updatedSkin)
+}
+
+func CreateSkins(c *fiber.Ctx) error {
+	log.Println("[SkinsController] - Incoming create skin request")
+
+	createdSkin, err := services.CreateSkins(c)
+	if err != nil {
+		log.Printf("[SkinsController] - Failed to create skin: %v", err)
+		return helpers.Error(c, fiber.StatusBadRequest, "Failed to create skin", err)
+	}
+
+	log.Printf("[SkinsController] - Successfully created skin: %+v", createdSkin)
+	return helpers.Success(c, "Successfully created skin", createdSkin)
 }
