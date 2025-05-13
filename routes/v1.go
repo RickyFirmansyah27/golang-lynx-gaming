@@ -12,4 +12,8 @@ func V1Route(app *fiber.App) {
 	v1.Get("/skins", controllers.GetAllSkins)
 	v1.Patch("/skins/:id", controllers.UpdateSkins)
 	v1.Post("/skins", controllers.CreateSkins)
+
+	v1.Get("/arenas", controllers.GetAllArenas)
+	v1.Patch("/arenas/:id", controllers.UpdateArenas)
+	v1.Post("/arenas", controllers.CreateArenas)
 }
