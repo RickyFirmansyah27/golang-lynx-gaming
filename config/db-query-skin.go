@@ -15,11 +15,7 @@ func GetAllskins(params map[string]string) ([]models.Skins, int, error) {
 
 	size, err := strconv.Atoi(params["size"])
 	if err != nil {
-		size = 10
-	}
-
-	if size != 10 && size != 20 && size != 50 {
-		size = 10
+		size = 1
 	}
 
 	query := "SELECT id, nama, tag, hero, image_url, config FROM lynx.skins"
