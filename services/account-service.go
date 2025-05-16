@@ -2,9 +2,9 @@ package services
 
 import (
 	"errors"
-	"log"
-
 	"go-fiber-vercel/helpers"
+	"log"
+	"net/url"
 )
 
 func GetAccountDetail(gameID, serverID string) (string, error) {
@@ -19,6 +19,12 @@ func GetAccountDetail(gameID, serverID string) (string, error) {
 		return "", err
 	}
 
-	log.Printf("[AccountService] - Successfully fetched nickname for gameID: %s, serverID: %s", gameID, serverID)
-	return nickname, nil
+	decodedNickname, err := url.QueryUnescape(nickname)
+	if err != nil {
+		log.Printf("[AccountService] - Failed to decode nickname: %v", err)
+		return "", err
+	}
+
+	log.Printf("[AccountService] - Successfully fetched and decoded nickname for gameID: %s, serverID: %s", gameID, serverID)
+	return decodedNickname, nil
 }
