@@ -5,6 +5,7 @@ import (
 	"go-fiber-vercel/config"
 	"go-fiber-vercel/helpers"
 	"go-fiber-vercel/models"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,22 +31,46 @@ func Login(gameID, serverID, password string) (models.User, string, error) {
 }
 
 func Register(user models.User) (models.User, string, error) {
+
+	validateEmail, err := config.GetUserByEmail(user.Email)
+	if err != nil || validateEmail.ID != 0 {
+		log.Printf("[AuthService] - Failed to validate email. Email may already exist: %s", user.Email)
+		return models.User{}, "", errors.New("email sudah digunakan atau terjadi kesalahan saat validasi")
+	}
+
+	validateGameID, err := config.GetUserByGameID(user.GameID, user.ServerID)
+	if err != nil || validateGameID.ID != 0 {
+		log.Printf("[AuthService] - Failed to validate ID. GameID may already exist: %s", user.GameID)
+		return models.User{}, "", errors.New("terjadi kesalahan saat validasi game ID")
+	}
+
+	nickname, err := GetAccountDetail(user.GameID, user.ServerID)
+	if err != nil {
+		log.Printf("[AuthService] - Failed to fetch nickname for GameID: %s, ServerID: %s, error: %v", user.GameID, user.ServerID, err)
+		return models.User{}, "", errors.New("failed to fetch nickname from API")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Printf("[AuthService] - Failed to hash password: %v", err)
 		return models.User{}, "", err
 	}
 
 	user.Password = string(hashedPassword)
+	user.Nickname = nickname
 
 	newUser, err := config.CreateUser(user)
 	if err != nil {
+		log.Printf("[AuthService] - Failed to create user: %v", err)
 		return models.User{}, "", err
 	}
 
 	token, err := helpers.GenerateToken(newUser)
 	if err != nil {
+		log.Printf("[AuthService] - Failed to generate token: %v", err)
 		return models.User{}, "", err
 	}
 
+	log.Printf("[AuthService] - Successfully created user: %+v", newUser)
 	return newUser, token, nil
 }

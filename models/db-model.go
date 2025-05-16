@@ -24,6 +24,21 @@ type User struct {
 	GameID   string `json:"gameId" db:"gameId"`
 	ServerID string `json:"serverId" db:"serverId"`
 	Name     string `json:"name" db:"name"`
+	Nickname string `json:"nickname" db:"nickname"`
 	Email    string `json:"email" db:"email"`
 	Password string `json:"password" db:"password"`
+}
+
+type AccountRequest struct {
+	TypeName string `json:"type_name"`
+	UserID   string `json:"userId"`
+	ZoneID   string `json:"zoneId"`
+}
+
+type AccountResponse struct {
+	Message    string `json:"message"`
+	Nickname   string `json:"nickname"`
+	ServerTime string `json:"server_time"`
+	Status     bool   `json:"status"`
+	TypeName   string `json:"type_name"`
 }

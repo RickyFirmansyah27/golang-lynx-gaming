@@ -51,7 +51,7 @@ func Register(c *fiber.Ctx) error {
 	newUser, token, err := services.Register(user)
 	if err != nil {
 		log.Printf("[AuthController] - Failed to register user: %v", err)
-		return helpers.Error(c, fiber.StatusBadRequest, "Failed to register user", err)
+		return helpers.Error(c, fiber.StatusBadRequest, "Failed to register user", err.Error())
 	}
 
 	data := fiber.Map{
