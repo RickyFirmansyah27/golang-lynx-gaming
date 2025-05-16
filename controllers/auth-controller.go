@@ -11,7 +11,7 @@ import (
 )
 
 func Login(c *fiber.Ctx) error {
-	log.Printf("[AuthController] - Incoming login request with body: %v", c.Body())
+	log.Printf("[AuthController] - Incoming login request with body: %s", c.Body())
 
 	var input struct {
 		GameID   string `json:"gameId"`
@@ -40,7 +40,7 @@ func Login(c *fiber.Ctx) error {
 }
 
 func Register(c *fiber.Ctx) error {
-	log.Printf("[AuthController] - Incoming register request with body: %v", c.Body())
+	log.Printf("[AuthController] - Incoming register request with body: %s", c.Body())
 
 	var user models.User
 	if err := c.BodyParser(&user); err != nil {
