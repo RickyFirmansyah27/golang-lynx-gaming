@@ -18,3 +18,12 @@ type Arenas struct {
 	ImageUrl    *string `json:"image_url" db:"image_url"`
 	Config      *string `json:"config" db:"config"`
 }
+
+type User struct {
+	ID       uint   `json:"id" db:"id"`
+	GameID   string `json:"gameId" db:"gameId"`
+	ServerID string `json:"serverId" db:"serverId"`
+	Name     string `json:"name" db:"name"`
+	Email    string `json:"email" db:"email"`
+	Password string `json:"password" db:"password"`
+}
