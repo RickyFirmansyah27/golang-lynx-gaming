@@ -11,7 +11,7 @@ import (
 )
 
 func Login(c *fiber.Ctx) error {
-	log.Printf("[AuthController] - Incoming login request with body: %s", c.Body())
+	log.Printf("[AuthController] - Incoming login request")
 
 	var input struct {
 		GameID   string `json:"gameId"`
