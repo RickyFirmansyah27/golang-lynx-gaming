@@ -11,6 +11,7 @@ func V1Route(app *fiber.App) {
 	v1 := app.Group("/v1")
 	v1.Post("/login", controllers.Login)
 	v1.Post("/register", controllers.Register)
+	v1.Post("/check-auth", controllers.CheckAuth)
 
 	v1.Get("/skins", controllers.GetAllSkins)
 	v1.Patch("/skins/:id", controllers.UpdateSkins)

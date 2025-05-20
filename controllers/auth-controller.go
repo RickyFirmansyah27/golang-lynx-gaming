@@ -62,3 +62,36 @@ func Register(c *fiber.Ctx) error {
 	log.Printf("[AuthController] - Successfully registered user with GameID: %s", newUser.GameID)
 	return helpers.Success(c, "Successfully registered user", data)
 }
+
+func CheckAuth(c *fiber.Ctx) error {
+	log.Printf("[AuthController] - Incoming check auth request")
+
+	var input struct {
+		Token string `json:"token"`
+	}
+
+	if err := c.BodyParser(&input); err != nil {
+		log.Printf("[AuthController] - Failed to parse body: %v", err)
+		return helpers.Error(c, fiber.StatusBadRequest, "Body tidak valid", err)
+	}
+
+	if input.Token == "" {
+		log.Println("[AuthController] - Token tidak ditemukan di body")
+		return helpers.Error(c, fiber.StatusUnauthorized, "Token tidak ditemukan", nil)
+	}
+
+	// Verifikasi token
+	user, err := services.CheckAuth(input.Token)
+	if err != nil {
+		log.Printf("[AuthController] - Token validation failed: %v", err)
+		return helpers.Success(c, "Token tidak valid atau sudah kedaluwarsa", fiber.Map{
+			"nickname": user.Nickname,
+		})
+	}
+
+	log.Printf("[AuthController] - Successfully logged in user with nickname: %+v", user.Nickname)
+
+	return helpers.Success(c, "Token masih aktif", fiber.Map{
+		"nickname": user.Nickname,
+	})
+}

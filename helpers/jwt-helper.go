@@ -12,13 +12,15 @@ import (
 
 var (
 	jwtSecret = []byte("awkajhwdau8121k2312938ainwioa8121kna8wye1923")
-	jwtExpiry = 24 * time.Hour
+	// jwtExpiry = 24 * time.Hour
+	jwtExpiry = 5 * time.Minute
 )
 
 type JWTModels struct {
-	UserID uint   `json:"userId"`
-	Name   string `json:"name"`
-	Email  string `json:"email"`
+	UserID   uint   `json:"userId"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Nickname string `json:"nickname"`
 	jwt.RegisteredClaims
 }
 
@@ -27,6 +29,7 @@ func GenerateToken(user models.User) (string, error) {
 		user.ID,
 		user.Name,
 		user.Email,
+		user.Nickname,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(jwtExpiry)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

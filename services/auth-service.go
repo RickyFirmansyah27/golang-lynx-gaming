@@ -74,3 +74,19 @@ func Register(user models.User) (models.User, string, error) {
 	log.Printf("[AuthService] - Successfully created user: %+v", newUser)
 	return newUser, token, nil
 }
+
+func CheckAuth(tokenString string) (models.User, error) {
+	claims, err := helpers.ValidateToken(tokenString)
+	if err != nil {
+		return models.User{}, errors.New("token tidak valid atau sudah kedaluwarsa")
+	}
+
+	user := models.User{
+		ID:       claims.UserID,
+		Name:     claims.Name,
+		Email:    claims.Email,
+		Nickname: claims.Nickname,
+	}
+
+	return user, nil
+}
